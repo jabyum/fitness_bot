@@ -1,0 +1,75 @@
+version: '3.9'
+
+services:
+  web:
+    build: .
+    command: sh -c "python manage.py runserver 0.0.0.0:8000 & wait"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+      - '5432'
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DJANGO_SETTINGS_MODULE=fit_bot.settings
+    networks:
+      - backend
+  bot:
+    build: .
+    restart: always
+    command: sh -c "python main.py & wait"
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+    environment:
+      - DB_HOST=db
+      - DJANGO_SETTINGS_MODULE=fit_bot.settings
+    networks:
+      - backend
+  support_bot:
+    build: .
+    restart: always
+    command: sh -c "python support_main.py & wait"
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+    environment:
+      - DB_HOST=db
+      - DJANGO_SETTINGS_MODULE=fit_bot.settings
+    networks:
+      - backend
+  warmup_bot:
+    build: .
+    restart: always
+    command: sh -c "python warmup_main.py & wait"
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+    environment:
+      - DB_HOST=db
+      - DJANGO_SETTINGS_MODULE=fit_bot.settings
+    networks:
+      - backend
+  db:
+    image: postgres:15
+    hostname: db
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: bridge
+
+volumes:
+  postgres_data:

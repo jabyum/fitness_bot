@@ -1,0 +1,1 @@
+ROOT_URLCONF = "fit_bot.fit_bot.urls"

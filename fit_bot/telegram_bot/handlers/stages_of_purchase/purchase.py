@@ -94,7 +94,7 @@ def ask_initials(message: Message):
     user_id, chat_id = get_id(message=message)
     initials = message.text.strip()
     if len(initials.split()) == 2:
-        markup = create_inline_markup(('Продолжить', 'continue'), ('Изменить', 'back'))
+        markup = create_inline_markup(('Продолжить', 'confirm_payment'), ('Изменить', 'back'))
         bot.send_message(user_id, text=f'Вы ввели следущие инициалы: *{initials}*, продолжить?',
                          reply_markup=markup, parse_mode='Markdown')
         add_data(user_id, 'initials', initials)
